@@ -26,7 +26,7 @@ from functools import partial
 from importlib import import_module
 
 import numpy as np
-import semisup
+import backend as semisup
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
 from tensorflow.python.platform import app

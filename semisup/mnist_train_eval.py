@@ -26,7 +26,8 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
-import semisup
+import backend as semisup
+import architectures
 
 from tensorflow.python.platform import app
 from tensorflow.python.platform import flags
@@ -57,7 +58,7 @@ flags.DEFINE_float('decay_steps', 5000,
 
 flags.DEFINE_float('visit_weight', 1.0, 'Weight for visit loss.')
 
-flags.DEFINE_integer('max_steps', 20000, 'Number of training steps.')
+flags.DEFINE_integer('max_steps', 1000, 'Number of training steps.')
 
 flags.DEFINE_string('logdir', '/tmp/semisup_mnist', 'Training log path.')
 
@@ -78,7 +79,7 @@ def main(_):
 
   graph = tf.Graph()
   with graph.as_default():
-    model = semisup.SemisupModel(semisup.architectures.mnist_model, NUM_LABELS,
+    model = semisup.SemisupModel(architectures.mnist_model, NUM_LABELS,
                                  IMAGE_SHAPE)
 
     # Set up inputs.
@@ -116,7 +117,7 @@ def main(_):
     coord = tf.train.Coordinator()
     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
 
-    for step in xrange(FLAGS.max_steps):
+    for step in range(FLAGS.max_steps):
       _, summaries = sess.run([train_op, summary_op])
       if (step + 1) % FLAGS.eval_interval == 0 or step == 99:
         print('Step: %d' % step)

@@ -55,8 +55,8 @@ def _read32(bytestream):
 
 def extract_images(filename):
   """Extract the images into a 4D uint8 numpy array [index, y, x, depth]."""
-  print('Extracting', filename)
-  with open(filename, 'r') as f, gzip.GzipFile(fileobj=f) as bytestream:
+  '''print('Extracting', filename)
+  with open(filename, 'rb') as f, gzip.GzipFile(fileobj=f) as bytestream:
     magic = _read32(bytestream)
     if magic != 2051:
       raise ValueError('Invalid magic number %d in MNIST image file: %s' %
@@ -67,12 +67,25 @@ def extract_images(filename):
     buf = bytestream.read(rows * cols * num_images)
     data = np.frombuffer(buf, dtype=np.uint8)
     data = data.reshape(num_images, rows, cols, 1)
+    return data'''
+  print('Extracting', filename)
+  with gzip.open(filename) as bytestream:
+    magic = _read32(bytestream)
+    if magic != 2051:
+      raise ValueError(
+          'Invalid magic number %d in MNIST image file: %s' %
+          (magic, filename))
+    num_images = _read32(bytestream)
+    rows = _read32(bytestream)
+    cols = _read32(bytestream)
+    buf = bytestream.read(rows * cols * num_images)
+    data = np.frombuffer(buf, dtype=np.uint8)
+    data = data.reshape(num_images, rows, cols, 1)
     return data
-
 
 def extract_labels(filename):
   """Extract the labels into a 1D uint8 numpy array [index]."""
-  print('Extracting', filename)
+  '''print('Extracting', filename)
   with open(filename, 'r') as f, gzip.GzipFile(fileobj=f) as bytestream:
     magic = _read32(bytestream)
     if magic != 2049:
@@ -82,4 +95,14 @@ def extract_labels(filename):
     buf = bytestream.read(num_items)
     labels = np.frombuffer(buf, dtype=np.uint8)
     return labels
-
+      print('Extracting', filename)'''
+  with gzip.open(filename) as bytestream:
+    magic = _read32(bytestream)
+    if magic != 2049:
+      raise ValueError(
+          'Invalid magic number %d in MNIST label file: %s' %
+          (magic, filename))
+    num_items = _read32(bytestream)
+    buf = bytestream.read(num_items)
+    labels = np.frombuffer(buf, dtype=np.uint8)
+    return labels
